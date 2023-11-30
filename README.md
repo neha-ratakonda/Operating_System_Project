@@ -1,4 +1,5 @@
 # Operating_System_Project
+#### Team Amoebas
  
 ## The Roller Coaster problem
 Suppose there are n passenger threads and a car thread. The passengers repeatedly wait to take rides in the car, which can hold C passengers, where C < n. The car can go around the tracks only when it is full. Here are some additional details:
