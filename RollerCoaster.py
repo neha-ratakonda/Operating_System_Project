@@ -25,6 +25,7 @@ def roller_coaster():
         
         # Time for the ride
         print("Roller coaster is moving with {} passengers".format(passengers_in_car))
+        time.sleep(2)
 
         moving.release() # Roller coaster will stop moving once the ride is finished
         deboarding.release()
