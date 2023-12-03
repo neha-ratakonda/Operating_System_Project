@@ -2,86 +2,86 @@ import threading
 import time
 import random
 
-CAPACITY = 3  # Capacity of the roller coaster car
+CAPACITY = 5  # C passengers
+MAXRIDES = 3 # Maximum no.of rides that the roller coaster can go on without a break
 
-onBoard = 0  # Number of passengers currently on board
-mutex = threading.Semaphore(1)  # Semaphore for controlling access to shared variables
-boarding = threading.Semaphore(0)  # Semaphore for signaling that a passenger is ready to board
-full = threading.Semaphore(0)  # Semaphore for signaling that the roller coaster is full and ready to move
-empty = threading.Semaphore(0)  # Semaphore for signaling that all passengers have left the roller coaster
-leave = threading.Semaphore(0)  # Semaphore for signaling that a passenger has left the roller coaster
 
-def init_sems():
-    pass  # Initialization function, currently empty
+passengers_in_car = 0
+current_rides = 0
+
+counter = threading.Semaphore(1)
+full = threading.Semaphore(0)
+deboarding = threading.Semaphore(0)
+moving = threading.Semaphore(1)
 
 def roller_coaster():
-    global onBoard
+    global passengers_in_car
+    global current_rides
 
-    while True:
-        boarding.release()  # Signal that the roller coaster is ready for boarding
-        full.acquire()      # Wait until the roller coaster is full
-
+    while current_rides < MAXRIDES:
+        #boarding.release()  # Ready for boarding
+        full.acquire()      # Wait until full
+        moving.acquire()    # Only when the coaster is full it'll start moving
+        
         # Time for the ride
-        print("Roller coaster is moving with {} passengers".format(onBoard))
+        print("Roller coaster is moving with {} passengers".format(passengers_in_car))
 
-        leave.release()  # Signal that passengers can start leaving
-        empty.acquire()  # Wait until all passengers have left
+        moving.release() # Roller coaster will stop moving once the ride is finished
+        deboarding.release()
+        current_rides += 1
 
 def passenger():
-    global onBoard
+    global passengers_in_car
 
-    while True:
+    while current_rides < MAXRIDES:
         # Arrive at the ride, wait for the roller coaster car
-        boarding.acquire()
-        mutex.acquire()
+        moving.acquire() # When the roller coaster is moving the passenger can't move, hence the passnger has to wait until the roller coaster is stationary
+       # boarding.acquire() # The boarding process can then begin
+        
+        counter.acquire() # Shared variable counter for counting the passengers on board
+        passengers_in_car += 1  # Board the car
+        print("Passenger boarded. Passengers on board: {}".format(passengers_in_car))
 
-        onBoard += 1  # Board the car
-        print("Passenger boarded. Passengers on board: {}".format(onBoard))
+        if passengers_in_car == CAPACITY:
+            full.release()
+        #else:
+            #boarding.release() #if the coaster isn't full, boarding continues
 
-        if onBoard == CAPACITY:
-            full.release()  # Signal that the roller coaster is full
-        else:
-            boarding.release()  # Allow the next passenger to board
+        counter.release()
+        moving.release()
+        
+        #ride is happening in this duration
 
-        mutex.release()
+        deboarding.acquire()
+        counter.acquire()
 
-        # Enjoy the ride
-        print("Yahoooooo, this ride is cool")
+        passengers_in_car -= 1  # deboarding the car
+        print("Passenger left. Passengers on board: {}".format(passengers_in_car))
 
-        leave.acquire()  # Wait for permission to leave
-        mutex.acquire()
+        if passengers_in_car > 0:
+            deboarding.release()
 
-        onBoard -= 1  # Leave the car
-        print("Passenger left. Passengers on board: {}".format(onBoard))
+        counter.release()
 
-        if onBoard > 0:
-            leave.release()  # Signal that another passenger can leave
-        else:
-            empty.release()  # Signal that all passengers have left
-
-        mutex.release()
-
-        # Enjoy the amusement park
+        # Enjoying the amusement park
         time.sleep(get_random_time())
+        #We did this to try and simualate a real life amusement park where people roam around the park before getting back into a queue to wait for the ride 
 
 def get_random_time():
-    return random.uniform(1, 3)  # Returns a random time between 1 and 3 seconds
+    return random.uniform(1, 4)
 
-if __name__ == "__main__":
-    roller_coaster_thread = threading.Thread(target=roller_coaster)
-    passenger_threads = []
+roller_coaster_thread = threading.Thread(target=roller_coaster)
+roller_coaster_thread.start() #The roller coaster arrives first
 
-    for i in range(CAPACITY):
-        passenger_thread = threading.Thread(target=passenger)
-        passenger_threads.append(passenger_thread)
+passenger_threads = []
 
-    roller_coaster_thread.start()  # Start the roller coaster thread
+for i in range(CAPACITY):
+    passenger_thread = threading.Thread(target=passenger)
+    passenger_thread.start()
+    passenger_threads.append(passenger_thread)
+    
 
-    for thread in passenger_threads:
-        thread.start()  # Start each passenger thread
+roller_coaster_thread.join()
 
-    roller_coaster_thread.join()  # Wait for the roller coaster thread to finish
-
-    for thread in passenger_threads:
-        thread.join()  # Wait for each passenger thread to finish
-
+for thread in passenger_threads:
+    thread.join()
