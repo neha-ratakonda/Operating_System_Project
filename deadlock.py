@@ -25,7 +25,7 @@ def roller_coaster():
         boarding.release()  # Ready for boarding
         full.acquire()      # Wait until full
         moving.acquire()    # Only when the coaster it full it'll start moving
-                            #the passenger thread is trying to acquiring moivng as well which leads to a deadlock
+                            #the passenger thread is trying to acquire moving as well which leads to a deadlock
         
         # Time for the ride
         print("Roller coaster is moving with {} passengers".format(passengers_in_car))
@@ -41,6 +41,7 @@ def passenger():
     while True:
         # Arrive at the ride, wait for the roller coaster car
         moving.acquire() # When the roller coaster is moving the passenger can't move, hence the passnger has to wait until the roller coaster is stationary
+                        #the roller coaster thread is trying to acquire moving at the same time leading to a deadlock
         boarding.acquire() # The boarding process can then begin
         
         counter.acquire() # Shared variable counter for counting the passengers on board
