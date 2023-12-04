@@ -16,8 +16,6 @@ deboarding = threading.Semaphore(0)
 
 moving = threading.Semaphore(0)
 
-def init_sems():
-    pass
 
 def roller_coaster():
     global passengers_in_car
