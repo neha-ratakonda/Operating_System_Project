@@ -32,6 +32,7 @@ def roller_coaster():
         print("Roller coaster is moving with {} passengers".format(passengers_in_car))
 
         moving.release() # Roller coaster will stop moving once the ride is finished
+                         #as the call is not protected by semaphore 'counter', this can lead to a race condition where multiple passengers might try to release these semaphores simultaneously
         deboarding.release()
         i += 1
         
