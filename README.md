@@ -1,5 +1,12 @@
 # Operating_System_Project
 #### Team Amoebas
+ * Anshula K (SE21UARI015)
+ * Jasti Sony Sourabhi (SE21UARI056)
+ * Jatin Mamidi (SE21UARI057)
+ * Samhita Muppidi (SE21UARI134)
+ * Shreeniketh A K (SE21UARI141)
+ * Neha Sai Ratakonda (SE21UARI127)
+
 
  
 ## The Roller Coaster problem
