@@ -30,6 +30,10 @@ def passenger():
 #         else:
 #             boarding.release()
 # WORK IN PROGRESS
+#We encountered difficulties with the ‘boarding’ semaphore 
+#We have a lot of ideas as to what semaphores to use to find the solution.
+#If possible we will also try to expand our problem statement from a single roller coaster car to ‘n’ cars in the future.
+
             
 def rollercoaster():
     
