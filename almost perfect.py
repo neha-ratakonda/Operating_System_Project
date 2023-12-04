@@ -40,7 +40,7 @@ def roller_coaster():
 def passenger():
     global passengers_in_car
 
-    while True:
+    while True: #as it is an infinite loop,it ceases the program from terminating
         # Arrive at the ride, wait for the roller coaster car
         moving.acquire() # When the roller coaster is moving the passenger can't move, hence the passnger has to wait until the roller coaster is stationary
         boarding.acquire() # The boarding process can then begin
